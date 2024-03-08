@@ -1,5 +1,6 @@
 name: Build and test
-on: [ push ]
+on:
+  workflow_call:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest

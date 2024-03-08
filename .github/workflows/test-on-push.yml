@@ -1,0 +1,5 @@
+name: Test pushed code
+on: [ push ]
+jobs:
+    build-and-test:
+        uses: ./.github/workflows/build-and-test.yml
