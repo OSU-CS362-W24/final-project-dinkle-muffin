@@ -9,6 +9,7 @@
     "cy:open": "cypress open"
   },
   "devDependencies": {
+    "@testing-library/cypress": "^10.0.1",
     "@testing-library/dom": "^9.3.4",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/user-event": "^14.5.2",
