@@ -15,7 +15,7 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run build
-      - run: npm test sortPoints.js
+      - run: npm test
       - if: ${{ inputs.upload-pages-artifact }}
         uses: actions/upload-pages-artifact@v1
         with:
