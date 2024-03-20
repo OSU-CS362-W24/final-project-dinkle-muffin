@@ -26,63 +26,65 @@ function initDomFromFiles(htmlPath, jsPath)
 	})
 }
 
-test("Pair of XY input fields are added when add value button is clicked", async function() {
-    // Arrange
-    initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
+describe("add value button behavior", function() {
+    test("Pair of XY input fields are added when add value button is clicked", async function() {
+        // Arrange
+        initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
 
-    const addValueButton = domTesting.getByText(document, "+")
+        const addValueButton = domTesting.getByText(document, "+")
 
-    // Act
-    const user = userEvent.setup()
-    await user.click(addValueButton)
+        // Act
+        const user = userEvent.setup()
+        await user.click(addValueButton)
 
-    // Assert
-    expect(domTesting.queryAllByLabelText(document, "X")).toHaveLength(2)
-    expect(domTesting.queryAllByLabelText(document, "Y")).toHaveLength(2)
-})
+        // Assert
+        expect(domTesting.queryAllByLabelText(document, "X")).toHaveLength(2)
+        expect(domTesting.queryAllByLabelText(document, "Y")).toHaveLength(2)
+    })
 
-test("7 pairs of input fields are on page when add value button is clicked 6 times", async function() {
-    // Arrange
-    initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
+    test("7 pairs of input fields are on page when add value button is clicked 6 times", async function() {
+        // Arrange
+        initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
 
-    const addValueButton = domTesting.getByText(document, "+")
+        const addValueButton = domTesting.getByText(document, "+")
 
-    // Act
-    const user = userEvent.setup()
-    await user.click(addValueButton)
-    await user.click(addValueButton)
-    await user.click(addValueButton)
-    await user.click(addValueButton)
-    await user.click(addValueButton)
-    await user.click(addValueButton)
+        // Act
+        const user = userEvent.setup()
+        await user.click(addValueButton)
+        await user.click(addValueButton)
+        await user.click(addValueButton)
+        await user.click(addValueButton)
+        await user.click(addValueButton)
+        await user.click(addValueButton)
 
-    // Assert
-    expect(domTesting.queryAllByLabelText(document, "X")).toHaveLength(7)
-    expect(domTesting.queryAllByLabelText(document, "Y")).toHaveLength(7)
-})
+        // Assert
+        expect(domTesting.queryAllByLabelText(document, "X")).toHaveLength(7)
+        expect(domTesting.queryAllByLabelText(document, "Y")).toHaveLength(7)
+    })
 
-test("Clicking add value button does not effect inputs of already existing input fields", async function() {
-    // Arrange
-    initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
+    test("Clicking add value button does not effect inputs of already existing input fields", async function() {
+        // Arrange
+        initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
 
-    const addValueButton = domTesting.getByText(document, "+")
-    let xInputs = domTesting.queryAllByLabelText(document, "X")
-    let yInputs = domTesting.queryAllByLabelText(document, "Y")
+        const addValueButton = domTesting.getByText(document, "+")
+        let xInputs = domTesting.queryAllByLabelText(document, "X")
+        let yInputs = domTesting.queryAllByLabelText(document, "Y")
 
-    // Act
-    const user = userEvent.setup()
-    await user.type(xInputs[0], "0")
-    await user.type(yInputs[0], "10")
-    await user.click(addValueButton)
-    xInputs = domTesting.queryAllByLabelText(document, "X")
-    yInputs = domTesting.queryAllByLabelText(document, "Y")
-    await user.type(xInputs[1], "1")
-    await user.type(yInputs[1], "20")
-    await user.click(addValueButton)
+        // Act
+        const user = userEvent.setup()
+        await user.type(xInputs[0], "0")
+        await user.type(yInputs[0], "10")
+        await user.click(addValueButton)
+        xInputs = domTesting.queryAllByLabelText(document, "X")
+        yInputs = domTesting.queryAllByLabelText(document, "Y")
+        await user.type(xInputs[1], "1")
+        await user.type(yInputs[1], "20")
+        await user.click(addValueButton)
 
-    // Assert
-    expect(xInputs[0]).toHaveValue(0)
-    expect(yInputs[0]).toHaveValue(10)
-    expect(xInputs[1]).toHaveValue(1)
-    expect(yInputs[1]).toHaveValue(20)
+        // Assert
+        expect(xInputs[0]).toHaveValue(0)
+        expect(yInputs[0]).toHaveValue(10)
+        expect(xInputs[1]).toHaveValue(1)
+        expect(yInputs[1]).toHaveValue(20)
+    })
 })
