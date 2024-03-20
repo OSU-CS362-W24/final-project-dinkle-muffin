@@ -10,6 +10,8 @@ const fs = require("fs")
 const domTesting = require('@testing-library/dom')
 const userEvent = require("@testing-library/user-event").default
 
+const chartBuilder = require('./chartBuilder')
+
 // These tests should work the same for the scatter, line, and bar pages since they implement the same behaviors
 const PAGE_NAME = "line"
 const CHART_BUILDER_PAGE_HTML_PATH = `${__dirname}/../${PAGE_NAME}/${PAGE_NAME}.html`
@@ -26,7 +28,7 @@ function initDomFromFiles(htmlPath, jsPath)
 	})
 }
 
-describe("add value button behavior", function() {
+describe("Add value button behavior", function() {
     test("Pair of XY input fields are added when add value button is clicked", async function() {
         // Arrange
         initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
@@ -86,5 +88,36 @@ describe("add value button behavior", function() {
         expect(yInputs[0]).toHaveValue(10)
         expect(xInputs[1]).toHaveValue(1)
         expect(yInputs[1]).toHaveValue(20)
+    })
+})
+
+describe("Alert behavior", function() {
+    test("Alert on clicking generate chart button with no labels", async function() {
+        // Arrange
+        initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
+
+        const addValueButton = domTesting.getByText(document, "+")
+        const generateChartButton = domTesting.getByText(document, "Generate chart")
+        let xInputs = domTesting.queryAllByLabelText(document, "X")
+        let yInputs = domTesting.queryAllByLabelText(document, "Y")
+
+        const spy = jest.spyOn(window, "alert")
+
+        // Act
+        const user = userEvent.setup()
+        await user.type(xInputs[0], "0")
+        await user.type(yInputs[0], "10")
+        await user.click(addValueButton)
+        xInputs = domTesting.queryAllByLabelText(document, "X")
+        yInputs = domTesting.queryAllByLabelText(document, "Y")
+        await user.type(xInputs[1], "1")
+        await user.type(yInputs[1], "20")
+        await user.click(generateChartButton)
+
+        // Assert
+        expect(spy).toHaveBeenCalledTimes(1)
+        expect(spy).toHaveBeenCalledWith("Error: Must specify a label for both X and Y!")
+
+        spy.mockRestore()
     })
 })
