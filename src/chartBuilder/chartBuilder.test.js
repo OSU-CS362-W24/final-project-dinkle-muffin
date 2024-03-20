@@ -4,6 +4,7 @@
 
 // This file contains integration tests for behaviors coded in the chartBuilder.js file
 
+//require("whatwg-fetch")
 require('@testing-library/jest-dom')
 
 const fs = require("fs")
@@ -69,25 +70,28 @@ describe("Add value button behavior", function() {
         initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
 
         const addValueButton = domTesting.getByText(document, "+")
-        let xInputs = domTesting.queryAllByLabelText(document, "X")
-        let yInputs = domTesting.queryAllByLabelText(document, "Y")
+        const clearChartButton = domTesting.getByText(document, "Clear chart data")
+        const firstXInput = domTesting.getByLabelText(document, "X")
+        const firstYInput = domTesting.getByLabelText(document, "Y")
 
         // Act
         const user = userEvent.setup()
-        await user.type(xInputs[0], "0")
-        await user.type(yInputs[0], "10")
+        await user.type(firstXInput, "0")
+        await user.type(firstYInput, "10")
         await user.click(addValueButton)
-        xInputs = domTesting.queryAllByLabelText(document, "X")
-        yInputs = domTesting.queryAllByLabelText(document, "Y")
-        await user.type(xInputs[1], "1")
-        await user.type(yInputs[1], "20")
+        const secondXInput = domTesting.queryAllByLabelText(document, "X")[1]
+        const secondYInput = domTesting.queryAllByLabelText(document, "Y")[1]
+        await user.type(secondXInput, "1")
+        await user.type(secondYInput, "20")
         await user.click(addValueButton)
 
         // Assert
-        expect(xInputs[0]).toHaveValue(0)
-        expect(yInputs[0]).toHaveValue(10)
-        expect(xInputs[1]).toHaveValue(1)
-        expect(yInputs[1]).toHaveValue(20)
+        expect(firstXInput).toHaveValue(0)
+        expect(firstYInput).toHaveValue(10)
+        expect(secondXInput).toHaveValue(1)
+        expect(secondYInput).toHaveValue(20)
+
+        await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
     })
 })
 
@@ -96,22 +100,21 @@ describe("Alert behavior", function() {
         // Arrange
         initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
 
-        const addValueButton = domTesting.getByText(document, "+")
         const generateChartButton = domTesting.getByText(document, "Generate chart")
-        let xInputs = domTesting.queryAllByLabelText(document, "X")
-        let yInputs = domTesting.queryAllByLabelText(document, "Y")
+        const clearChartButton = domTesting.getByText(document, "Clear chart data")
+        const xInput = domTesting.getByLabelText(document, "X")
+        const yInput = domTesting.getByLabelText(document, "Y")
 
         const spy = jest.spyOn(window, "alert")
 
+        spy.mockImplementation(function() {
+            // intentionally left empty -- needed to supress error
+        })
+
         // Act
         const user = userEvent.setup()
-        await user.type(xInputs[0], "0")
-        await user.type(yInputs[0], "10")
-        await user.click(addValueButton)
-        xInputs = domTesting.queryAllByLabelText(document, "X")
-        yInputs = domTesting.queryAllByLabelText(document, "Y")
-        await user.type(xInputs[1], "1")
-        await user.type(yInputs[1], "20")
+        await user.type(xInput, "0")
+        await user.type(yInput, "10")
         await user.click(generateChartButton)
 
         // Assert
@@ -119,5 +122,6 @@ describe("Alert behavior", function() {
         expect(spy).toHaveBeenCalledWith("Error: Must specify a label for both X and Y!")
 
         spy.mockRestore()
+        await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
     })
 })
