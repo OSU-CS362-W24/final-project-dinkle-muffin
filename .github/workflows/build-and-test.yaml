@@ -16,6 +16,9 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: npm test
+      - run: npm run cy:run
+        env:
+          CI: true
       - if: ${{ inputs.upload-pages-artifact }}
         uses: actions/upload-pages-artifact@v1
         with:
