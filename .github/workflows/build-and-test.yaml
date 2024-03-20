@@ -15,6 +15,7 @@ jobs:
           node-version: 20
       - run: npm ci
       - run: npm run build
+      - run: npm start &
       - run: npm test
       - run: npm run cy:run
         env:
