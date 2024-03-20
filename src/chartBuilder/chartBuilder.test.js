@@ -40,3 +40,23 @@ test("Pair of XY input fields are added when add value button is clicked", async
     expect(domTesting.queryAllByLabelText(document, "X")).toHaveLength(2)
     expect(domTesting.queryAllByLabelText(document, "Y")).toHaveLength(2)
 })
+
+test("7 pairs of input fields are on page when add value button is clicked 6 times", async function() {
+    // Arrange
+    initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
+
+    const addValueButton = domTesting.getByText(document, "+")
+
+    // Act
+    const user = userEvent.setup()
+    await user.click(addValueButton)
+    await user.click(addValueButton)
+    await user.click(addValueButton)
+    await user.click(addValueButton)
+    await user.click(addValueButton)
+    await user.click(addValueButton)
+
+    // Assert
+    expect(domTesting.queryAllByLabelText(document, "X")).toHaveLength(7)
+    expect(domTesting.queryAllByLabelText(document, "Y")).toHaveLength(7)
+})
