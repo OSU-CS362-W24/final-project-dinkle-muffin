@@ -241,3 +241,52 @@ describe("Alert behavior", function() {
         await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
     })
 })
+
+describe("Clear chart button behavior", function() {
+    test("All data cleared on clicking clear chart data button", async function() {
+        // Arrange
+        initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
+
+        const clearChartButton = domTesting.getByText(document, "Clear chart data")
+        const xLabel = domTesting.getByLabelText(document, "X label")
+        const yLabel = domTesting.getByLabelText(document, "Y label")
+        let xInput = domTesting.getByLabelText(document, "X")
+        let yInput = domTesting.getByLabelText(document, "Y")
+        const addValueButton = domTesting.getByText(document, "+")
+        const chartTitle = domTesting.getByLabelText(document, "Chart title")
+        const chartColor = domTesting.getByLabelText(document, "Chart color")
+
+        // Act
+        const user = userEvent.setup()
+
+        await user.type(chartTitle, "THE BEST CHART EVER ZOMG :O")
+
+        await user.type(xLabel, "a")
+        await user.type(yLabel, "b")
+
+        await user.type(xInput, "0")
+        await user.type(yInput, "10")
+        await user.click(addValueButton)
+        await user.click(addValueButton)
+
+        domTesting.fireEvent.input(chartColor, {target: {value: "#000000"}})
+
+        await user.click(clearChartButton)
+
+        // Assert
+        expect(chartTitle).not.toHaveValue()
+
+        expect(xLabel).not.toHaveValue()
+        expect(yLabel).not.toHaveValue()
+
+        // assertions will fail unless we get these elements again because in memory they are array elements that are removed and re-added
+        xInput = domTesting.getByLabelText(document, "X")
+        yInput = domTesting.getByLabelText(document, "Y")
+        expect(xInput).not.toHaveValue()
+        expect(yInput).not.toHaveValue()
+
+        expect(domTesting.queryAllByLabelText(document, "X")).toHaveLength(1)
+        expect(domTesting.queryAllByLabelText(document, "Y")).toHaveLength(1)
+        expect(chartColor).toHaveValue("#ff4500")
+    })
+})
