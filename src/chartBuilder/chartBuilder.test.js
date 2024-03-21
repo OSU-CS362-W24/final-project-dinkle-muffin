@@ -91,7 +91,7 @@ describe("Add value button behavior", function() {
         expect(secondXInput).toHaveValue(1)
         expect(secondYInput).toHaveValue(20)
 
-        await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
+        window.localStorage.clear();    // required because data that has been input is saved between page refreshes
     })
 })
 
@@ -122,7 +122,7 @@ describe("Alert behavior", function() {
         expect(spy).toHaveBeenCalledWith("Error: Must specify a label for both X and Y!")
 
         spy.mockRestore()
-        await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
+        window.localStorage.clear(); // required because data that has been input is saved between page refreshes
     })
 
     test("Alert on clicking generate chart button with no Y label", async function() {
@@ -153,7 +153,7 @@ describe("Alert behavior", function() {
         expect(spy).toHaveBeenCalledWith("Error: Must specify a label for both X and Y!")
 
         spy.mockRestore()
-        await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
+        window.localStorage.clear(); // required because data that has been input is saved between page refreshes
     })
 
     test("Alert on clicking generate chart button with no X label", async function() {
@@ -184,7 +184,7 @@ describe("Alert behavior", function() {
         expect(spy).toHaveBeenCalledWith("Error: Must specify a label for both X and Y!")
 
         spy.mockRestore()
-        await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
+        window.localStorage.clear(); // required because data that has been input is saved between page refreshes
     })
 
     test("Alert on clicking generate chart button with no values", async function() {
@@ -213,7 +213,7 @@ describe("Alert behavior", function() {
         expect(spy).toHaveBeenCalledWith("Error: No data specified!")
 
         spy.mockRestore()
-        await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
+        window.localStorage.clear(); // required because data that has been input is saved between page refreshes
     })
 
     test("Alert on clicking generate chart button with no inputs of any kind", async function() {
@@ -238,7 +238,7 @@ describe("Alert behavior", function() {
         expect(spy).toHaveBeenCalledWith("Error: No data specified!")
 
         spy.mockRestore()
-        await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
+        window.localStorage.clear(); // required because data that has been input is saved between page refreshes
     })
 })
 
@@ -288,5 +288,7 @@ describe("Clear chart button behavior", function() {
         expect(domTesting.queryAllByLabelText(document, "X")).toHaveLength(1)
         expect(domTesting.queryAllByLabelText(document, "Y")).toHaveLength(1)
         expect(chartColor).toHaveValue("#ff4500")
+
+        window.localStorage.clear(); // required because data that has been input is saved between page refreshes
     })
 })
