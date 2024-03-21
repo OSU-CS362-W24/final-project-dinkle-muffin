@@ -124,4 +124,120 @@ describe("Alert behavior", function() {
         spy.mockRestore()
         await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
     })
+
+    test("Alert on clicking generate chart button with no Y label", async function() {
+        // Arrange
+        initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
+
+        const generateChartButton = domTesting.getByText(document, "Generate chart")
+        const clearChartButton = domTesting.getByText(document, "Clear chart data")
+        const xLabel = domTesting.getByLabelText(document, "X label")
+        const xInput = domTesting.getByLabelText(document, "X")
+        const yInput = domTesting.getByLabelText(document, "Y")
+
+        const spy = jest.spyOn(window, "alert")
+
+        spy.mockImplementation(function() {
+            // intentionally left empty -- needed to supress error
+        })
+
+        // Act
+        const user = userEvent.setup()
+        await user.type(xLabel, "a")
+        await user.type(xInput, "0")
+        await user.type(yInput, "10")
+        await user.click(generateChartButton)
+
+        // Assert
+        expect(spy).toHaveBeenCalledTimes(1)
+        expect(spy).toHaveBeenCalledWith("Error: Must specify a label for both X and Y!")
+
+        spy.mockRestore()
+        await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
+    })
+
+    test("Alert on clicking generate chart button with no X label", async function() {
+        // Arrange
+        initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
+
+        const generateChartButton = domTesting.getByText(document, "Generate chart")
+        const clearChartButton = domTesting.getByText(document, "Clear chart data")
+        const yLabel = domTesting.getByLabelText(document, "Y label")
+        const xInput = domTesting.getByLabelText(document, "X")
+        const yInput = domTesting.getByLabelText(document, "Y")
+
+        const spy = jest.spyOn(window, "alert")
+
+        spy.mockImplementation(function() {
+            // intentionally left empty -- needed to supress error
+        })
+
+        // Act
+        const user = userEvent.setup()
+        await user.type(yLabel, "b")
+        await user.type(xInput, "0")
+        await user.type(yInput, "10")
+        await user.click(generateChartButton)
+
+        // Assert
+        expect(spy).toHaveBeenCalledTimes(1)
+        expect(spy).toHaveBeenCalledWith("Error: Must specify a label for both X and Y!")
+
+        spy.mockRestore()
+        await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
+    })
+
+    test("Alert on clicking generate chart button with no values", async function() {
+        // Arrange
+        initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
+
+        const generateChartButton = domTesting.getByText(document, "Generate chart")
+        const clearChartButton = domTesting.getByText(document, "Clear chart data")
+        const xLabel = domTesting.getByLabelText(document, "X label")
+        const yLabel = domTesting.getByLabelText(document, "Y label")
+
+        const spy = jest.spyOn(window, "alert")
+
+        spy.mockImplementation(function() {
+            // intentionally left empty -- needed to supress error
+        })
+
+        // Act
+        const user = userEvent.setup()
+        await user.type(xLabel, "a")
+        await user.type(yLabel, "b")
+        await user.click(generateChartButton)
+
+        // Assert
+        expect(spy).toHaveBeenCalledTimes(1)
+        expect(spy).toHaveBeenCalledWith("Error: No data specified!")
+
+        spy.mockRestore()
+        await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
+    })
+
+    test("Alert on clicking generate chart button with no inputs of any kind", async function() {
+        // Arrange
+        initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
+
+        const generateChartButton = domTesting.getByText(document, "Generate chart")
+        const clearChartButton = domTesting.getByText(document, "Clear chart data")
+
+        const spy = jest.spyOn(window, "alert")
+
+        spy.mockImplementation(function() {
+            // intentionally left empty -- needed to supress error
+        })
+
+        // Act
+        const user = userEvent.setup()
+        await user.click(generateChartButton)
+
+        // Assert
+        expect(spy).toHaveBeenCalledTimes(1)
+        expect(spy).toHaveBeenCalledWith("Error: No data specified!")
+
+        spy.mockRestore()
+        await user.click(clearChartButton) // required because data that has been input is saved between page refreshes
+    })
 })
