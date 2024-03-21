@@ -4,14 +4,14 @@
 
 // This file contains integration tests for behaviors coded in the chartBuilder.js file
 
-//require("whatwg-fetch")
 require('@testing-library/jest-dom')
 
 const fs = require("fs")
 const domTesting = require('@testing-library/dom')
 const userEvent = require("@testing-library/user-event").default
 
-const chartBuilder = require('./chartBuilder')
+jest.mock("../lib/generateChartImg.js")
+const generateChartImgSpy = require("../lib/generateChartImg.js")
 
 // These tests should work the same for the scatter, line, and bar pages since they implement the same behaviors
 const PAGE_NAME = "line"
@@ -91,7 +91,7 @@ describe("Add value button behavior", function() {
         expect(secondXInput).toHaveValue(1)
         expect(secondYInput).toHaveValue(20)
 
-        window.localStorage.clear();    // required because data that has been input is saved between page refreshes
+        window.localStorage.clear() // required because data that has been input is saved between page refreshes
     })
 })
 
@@ -101,7 +101,6 @@ describe("Alert behavior", function() {
         initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
 
         const generateChartButton = domTesting.getByText(document, "Generate chart")
-        const clearChartButton = domTesting.getByText(document, "Clear chart data")
         const xInput = domTesting.getByLabelText(document, "X")
         const yInput = domTesting.getByLabelText(document, "Y")
 
@@ -122,7 +121,7 @@ describe("Alert behavior", function() {
         expect(spy).toHaveBeenCalledWith("Error: Must specify a label for both X and Y!")
 
         spy.mockRestore()
-        window.localStorage.clear(); // required because data that has been input is saved between page refreshes
+        window.localStorage.clear()
     })
 
     test("Alert on clicking generate chart button with no Y label", async function() {
@@ -130,7 +129,6 @@ describe("Alert behavior", function() {
         initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
 
         const generateChartButton = domTesting.getByText(document, "Generate chart")
-        const clearChartButton = domTesting.getByText(document, "Clear chart data")
         const xLabel = domTesting.getByLabelText(document, "X label")
         const xInput = domTesting.getByLabelText(document, "X")
         const yInput = domTesting.getByLabelText(document, "Y")
@@ -153,7 +151,7 @@ describe("Alert behavior", function() {
         expect(spy).toHaveBeenCalledWith("Error: Must specify a label for both X and Y!")
 
         spy.mockRestore()
-        window.localStorage.clear(); // required because data that has been input is saved between page refreshes
+        window.localStorage.clear()
     })
 
     test("Alert on clicking generate chart button with no X label", async function() {
@@ -161,7 +159,6 @@ describe("Alert behavior", function() {
         initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
 
         const generateChartButton = domTesting.getByText(document, "Generate chart")
-        const clearChartButton = domTesting.getByText(document, "Clear chart data")
         const yLabel = domTesting.getByLabelText(document, "Y label")
         const xInput = domTesting.getByLabelText(document, "X")
         const yInput = domTesting.getByLabelText(document, "Y")
@@ -184,7 +181,7 @@ describe("Alert behavior", function() {
         expect(spy).toHaveBeenCalledWith("Error: Must specify a label for both X and Y!")
 
         spy.mockRestore()
-        window.localStorage.clear(); // required because data that has been input is saved between page refreshes
+        window.localStorage.clear()
     })
 
     test("Alert on clicking generate chart button with no values", async function() {
@@ -192,7 +189,6 @@ describe("Alert behavior", function() {
         initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
 
         const generateChartButton = domTesting.getByText(document, "Generate chart")
-        const clearChartButton = domTesting.getByText(document, "Clear chart data")
         const xLabel = domTesting.getByLabelText(document, "X label")
         const yLabel = domTesting.getByLabelText(document, "Y label")
 
@@ -213,7 +209,7 @@ describe("Alert behavior", function() {
         expect(spy).toHaveBeenCalledWith("Error: No data specified!")
 
         spy.mockRestore()
-        window.localStorage.clear(); // required because data that has been input is saved between page refreshes
+        window.localStorage.clear()
     })
 
     test("Alert on clicking generate chart button with no inputs of any kind", async function() {
@@ -221,7 +217,6 @@ describe("Alert behavior", function() {
         initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
 
         const generateChartButton = domTesting.getByText(document, "Generate chart")
-        const clearChartButton = domTesting.getByText(document, "Clear chart data")
 
         const spy = jest.spyOn(window, "alert")
 
@@ -238,7 +233,7 @@ describe("Alert behavior", function() {
         expect(spy).toHaveBeenCalledWith("Error: No data specified!")
 
         spy.mockRestore()
-        window.localStorage.clear(); // required because data that has been input is saved between page refreshes
+        window.localStorage.clear()
     })
 })
 
@@ -288,7 +283,48 @@ describe("Clear chart button behavior", function() {
         expect(domTesting.queryAllByLabelText(document, "X")).toHaveLength(1)
         expect(domTesting.queryAllByLabelText(document, "Y")).toHaveLength(1)
         expect(chartColor).toHaveValue("#ff4500")
+        
+        window.localStorage.clear()
+    })
+})
 
-        window.localStorage.clear(); // required because data that has been input is saved between page refreshes
+describe("Generate chart button behavior", function() {
+    test("All data sent correctly to image generator on clicking generate chart button", async function() {
+        // Arrange
+        initDomFromFiles(CHART_BUILDER_PAGE_HTML_PATH, CHART_BUILDER_PAGE_JS_PATH)
+
+        const generateChartButton = domTesting.getByText(document, "Generate chart")
+        const xLabel = domTesting.getByLabelText(document, "X label")
+        const yLabel = domTesting.getByLabelText(document, "Y label")
+        const xInput = domTesting.getByLabelText(document, "X")
+        const yInput = domTesting.getByLabelText(document, "Y")
+        const chartTitle = domTesting.getByLabelText(document, "Chart title")
+        const chartColor = domTesting.getByLabelText(document, "Chart color")
+        
+        generateChartImgSpy.mockImplementation(function() {
+            return "http://placekitten.com/480/480"
+        })
+
+        // Act
+        const user = userEvent.setup()
+
+        await user.type(chartTitle, "The Title")
+
+        await user.type(xLabel, "a")
+        await user.type(yLabel, "b")
+
+        await user.type(xInput, "0")
+        await user.type(yInput, "10")
+
+        domTesting.fireEvent.input(chartColor, {target: {value: "#000000"}})
+
+        await user.click(generateChartButton)
+
+        // Assert
+        expect(generateChartImgSpy).toHaveBeenCalledTimes(1)
+        expect(generateChartImgSpy).toHaveBeenCalledWith(`${PAGE_NAME}`, [{x: "0", y: "10"}], "a", "b", "The Title", "#000000")
+
+        generateChartImgSpy.mockRestore()
+        window.localStorage.clear()
     })
 })
